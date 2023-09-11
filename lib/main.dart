@@ -13,9 +13,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Random Chess',
+      title: 'Dylans Random Chess Game',
       theme: ThemeData(
-        primarySwatch: Colors.brown,
+        primarySwatch: Colors.blue,
       ),
       home: HomePage(),
     );
