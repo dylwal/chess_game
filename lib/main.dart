@@ -4,12 +4,18 @@ import 'home_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_ui_database/firebase_ui_database.dart';
 
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final databaseReference = FirebaseDatabase.instance.ref();
 
+  databaseReference
+      .child("users")
+      .set({'name': 'John Doe', 'email': 'johndoe@example.com'});
   runApp(const MyApp());
 }
 
