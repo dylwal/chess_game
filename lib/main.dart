@@ -13,11 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final databaseReference = FirebaseDatabase.instance.ref();
 
-  databaseReference
-      .child("users")
-      .set({'name': 'John Doe', 'email': 'johndoe@example.com'});
   runApp(const MyApp());
 }
 
@@ -27,6 +23,28 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //Record User Data
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final databaseReference = FirebaseDatabase.instance.ref();
+      final userRef = databaseReference.child("users").child(user.uid);
+
+      // Check if user exists in the database
+      userRef.once().then((DatabaseEvent event) {
+        DataSnapshot snapshot = event.snapshot;
+        if (snapshot.value != null) {
+          Map<String, dynamic> userData =
+              snapshot.value as Map<String, dynamic>;
+          // User exists, increment login counter
+          int currentCount = userData['loginCount'] ?? 0;
+          userRef.update({'loginCount': currentCount + 1});
+        } else {
+          // User doesn't exist, set login counter to 1
+          userRef.set({'loginCount': 1, 'email': user.email});
+        }
+      });
+    }
+
     final providers = [EmailAuthProvider()];
     return MaterialApp(
       title: 'Dylans Random Chess Game',
@@ -81,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.pushReplacementNamed(
                     context, '/home'); // Navigate to HomePage
               },
-              child: Text("Go to Home"),
+              child: Text("Play Chess"),
             ),
           ],
         ),
